@@ -140,14 +140,13 @@ uint8_t bmp085_read_1B(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t Me
 uint16_t bmp085_read_2B(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint16_t MemAddress, uint32_t Timeout)
 {
 	uint16_t MemAddSize = 1;
-	uint8_t data_msb;
-	uint8_t data_lsb;
+	uint8_t data[2];
 
-	HAL_I2C_Mem_Read(hi2c, DevAddress, MemAddress, MemAddSize, &data_msb, 1, Timeout);
-	HAL_I2C_Mem_Read(hi2c, DevAddress, MemAddress+1, MemAddSize, &data_lsb, 1, Timeout);
+	HAL_I2C_Mem_Read(hi2c, DevAddress, MemAddress | 0x80, MemAddSize, &data, 2, Timeout);
+	//HAL_I2C_Mem_Read(hi2c, DevAddress, MemAddress+1, MemAddSize, &data_lsb, 1, Timeout);
 
-	int16_t res = ((int16_t)data_msb) << 8;
-	res += (int16_t)data_lsb;
+	int16_t res = (data[0] << 8 ) | data[1];
+	//res += (int16_t)data[0];
 
 	return res;
 }
